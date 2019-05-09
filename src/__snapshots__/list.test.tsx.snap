@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Keyboard Manager should render without crashing 1`] = `
+<ul
+  role="listbox"
+  tabindex="0"
+>
+  <li
+    aria-selected="false"
+    role="option"
+    tabindex="0"
+  >
+    Item One
+  </li>
+  <li
+    aria-selected="false"
+    role="option"
+    tabindex="0"
+  >
+    Item Two
+  </li>
+</ul>
+`;

@@ -1,24 +1,41 @@
-import * as React from 'react'
+import * as React from 'react';
 
 export interface ListProps {
-  onKeyPress?: () => void
+  tabIndex: number;
+  onKeyPress?: () => void;
 }
 
 export class List extends React.Component<ListProps> {
-  private attachKeyPress = (c: HTMLUListElement) => {
-    console.log('attach')
-    c.addEventListener('keypress', () => {
-      console.log('hi^^^^^')
-      return this.props.onKeyPress || (() => {})
-    })
-  }
+  private readonly refList: React.RefObject<
+    HTMLUListElement
+  > = React.createRef();
+  // private attachKeyPress = (c: HTMLUListElement) => {
+  //   console.log('attach')
+  //   c.addEventListener('keypress', () => {
+  //     console.log('hi^^^^^')
+  //     return this.props.onKeyPress || (() => {})
+  //   })
+  // }
 
   public render(): JSX.Element {
-    return <ul ref={this.attachKeyPress}>{this.props.children}</ul>
+    const { tabIndex } = this.props;
+    return (
+      <ul ref={this.refList} role="listbox" tabIndex={tabIndex}>
+        {this.props.children}
+      </ul>
+    );
   }
 }
 
-export function ListItem(props: React.PropsWithChildren<unknown>): JSX.Element {
-  // tabIndex JSDOM Fuckup
-  return <li tabIndex={0}>{props.children}</li>
+export interface ListItemProps {
+  selected: boolean;
+  children: any;
+}
+
+export function ListItem(props: ListItemProps): JSX.Element {
+  return (
+    <li aria-selected={props.selected} role="option" tabIndex={0}>
+      {props.children}
+    </li>
+  );
 }
