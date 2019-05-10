@@ -7,16 +7,22 @@ import { List, ListItem } from './list';
 afterEach(cleanup);
 
 describe('Keyboard Manager', () => {
-  test('should render without crashing', () => {
+  test('Receives focus on tab from the previous element', () => {
     const { getByRole } = render(
       <List tabIndex={0}>
         <ListItem selected={false}>Item One</ListItem>
         <ListItem selected={false}>Item Two</ListItem>
       </List>
     );
-    expect(getByRole('listbox')).toMatchSnapshot();
-    
+    const wrapper = getByRole('listbox');
+    expect(document.activeElement).toBe(document.body);
+    fireEvent.keyDown(document.body, { key: 'Tab', code: 9 });
+    wrapper.focus();
+    expect(document.activeElement).toBe(wrapper);
+    expect(wrapper.getAttribute('aria-activedescendant')).toBeNull();
   });
+  test('onkeydown and no item has not been selected  move the focus to the first element', () => {});
+
   test('First list element gets the focus', () => {
     const { getByText } = render(
       <List tabIndex={0}>
@@ -39,6 +45,5 @@ describe('Keyboard Manager', () => {
     const firstLi = getByText('Item One');
     firstLi.focus();
     fireEvent.keyDown(getByRole('listbox'), { key: 'ArrowDown', code: 40 });
-
   });
 });
