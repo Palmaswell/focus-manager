@@ -25,15 +25,15 @@ export class List extends React.Component<ListProps> {
   }
 }
 
-export interface ListItemProps {
+export interface ItemProps {
   selected: boolean;
   children: any;
 }
 
-export function ListItem(props: ListItemProps): JSX.Element {
-  return (
-    <li aria-selected={props.selected} role="option">
+export const Item = React.forwardRef<HTMLLIElement, ItemProps>(
+  (props: ItemProps, ref): JSX.Element => (
+    <li aria-selected={props.selected} role="option" ref={ref}>
       {props.children}
     </li>
-  );
-}
+  )
+);
