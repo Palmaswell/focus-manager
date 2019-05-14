@@ -1,10 +1,10 @@
-// import { FocusContainerContext } from './focus-container';
-// import { FocusElementContext } from './focus-element';
-
-export function sortTabIndex(arr: any[]): any[] {
+export interface SortTabPosition {
+  readonly tabPosition?: number;
+}
+export function sortTabIndex<T extends SortTabPosition>(arr: T[]): T[] {
   return arr.sort((ax, bx) => {
-    const a = ax.tabIndex;
-    const b = bx.tabIndex;
+    const a = ax.tabPosition;
+    const b = bx.tabPosition;
     if (typeof a !== 'number') {
       return -1;
     }

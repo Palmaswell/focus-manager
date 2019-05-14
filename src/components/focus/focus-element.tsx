@@ -1,26 +1,40 @@
 import * as React from 'react';
-import { FocusContainerCtx } from './focus-container';
+import {
+  FocusContainerConsumer,
+  FocusContainerContext,
+} from './focus-container';
+import { FocusLifeCycleProvider } from './focus-lifecycle';
 
+// export interface FocusElementContextProps extends SortTabPosition {}
 export interface FocusElementContextProps {
   tabIndex?: number;
 }
 
-export class FocusElementContext {
+export class FocusElementContext implements FocusElementContextProps {
   public readonly tabIndex?: number;
+  public tabPosition: number = 0xeac7;
   public constructor(props: FocusElementContextProps = {}) {
     this.tabIndex = props.tabIndex;
   }
-  public clone(tabIndex: number): FocusElementContext {
+
+  public setTabPosition(tabPosition: number): FocusElementContext {
     if (typeof this.tabIndex === 'number') {
-      tabIndex = this.tabIndex;
+      this.tabPosition = this.tabIndex;
+    } else {
+      this.tabPosition = tabPosition;
     }
-    return new FocusElementContext({ tabIndex });
+    return this;
   }
 }
 
-export type FocusElementProps = React.PropsWithChildren<
-  FocusElementContextProps
->;
+export type FocusElementProps = React.PropsWithChildren<{
+  readonly tabIndex?: number;
+}>;
+
+export class FocusElementProvider extends FocusLifeCycleProvider<
+  FocusContainerContext,
+  FocusElementContext
+> {}
 
 export class FocusElement extends React.Component<FocusElementProps> {
   private readonly elementCtx: FocusElementContext;
@@ -28,17 +42,24 @@ export class FocusElement extends React.Component<FocusElementProps> {
     super(props);
     this.elementCtx = new FocusElementContext(props);
   }
+
   public render(): JSX.Element {
     return (
-      <FocusContainerCtx.Consumer>
-        {value => {
-          if (value instanceof Error) {
-            throw value;
+      <FocusContainerConsumer>
+        {focusContainerContext => {
+          if (focusContainerContext instanceof Error) {
+            throw focusContainerContext;
           }
-          value.addElement(this.elementCtx);
-          return this.props.children;
+
+          return (
+            <FocusElementProvider
+              containerContext={focusContainerContext}
+              elementContext={this.elementCtx}>
+              {this.props.children}
+            </FocusElementProvider>
+          );
         }}
-      </FocusContainerCtx.Consumer>
+      </FocusContainerConsumer>
     );
   }
 }

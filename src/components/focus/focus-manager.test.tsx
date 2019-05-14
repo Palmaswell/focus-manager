@@ -2,7 +2,7 @@ import * as React from 'react';
 import { mount } from 'enzyme';
 import {
   FocusManager,
-  FocusManagerCtx,
+  FocusManagerConsumer,
   FocusManagerContext,
 } from './focus-manager';
 import { FocusContainer } from './focus-container';
@@ -12,7 +12,7 @@ describe('FocusManager', () => {
     const fn = jest.fn();
     mount(
       <FocusManager>
-        <FocusManagerCtx.Consumer>{fn}</FocusManagerCtx.Consumer>
+        <FocusManagerConsumer>{fn}</FocusManagerConsumer>
       </FocusManager>
     );
     expect(fn).toBeCalled();
@@ -21,9 +21,9 @@ describe('FocusManager', () => {
     const fn = jest.fn();
     mount(
       <FocusManager>
-        <FocusManagerCtx.Consumer>{fn}</FocusManagerCtx.Consumer>
+        <FocusManagerConsumer>{fn}</FocusManagerConsumer>
         <FocusManager>
-          <FocusManagerCtx.Consumer>{fn}</FocusManagerCtx.Consumer>
+          <FocusManagerConsumer>{fn}</FocusManagerConsumer>
         </FocusManager>
       </FocusManager>
     );
@@ -34,8 +34,8 @@ describe('FocusManager', () => {
   test('FocusManager registers 5 mixed FocusContainers with and without tabIndex', () => {
     const fn = jest.fn();
     mount(
-      <FocusManager>
-        <FocusManagerCtx.Consumer>{fn}</FocusManagerCtx.Consumer>
+      <FocusManager reset={true}>
+        <FocusManagerConsumer>{fn}</FocusManagerConsumer>
         <FocusContainer />
         <FocusContainer tabIndex={3} />
         <div>
@@ -50,14 +50,15 @@ describe('FocusManager', () => {
     );
     const fnCtx: FocusManagerContext = fn.mock.calls[0][0];
     expect(fnCtx.getContainers().length).toBe(5);
-    expect(fnCtx.getContainers().map(a => a.tabIndex)).toEqual([
+    expect(fnCtx.getContainers().map(a => a.tabPosition)).toEqual([
       0,
       1,
       3,
       -1,
-      -4,
+      -5,
     ]);
   });
+
   // test('FocusManager registers 7  FocusContainers without tabIndex', () => {
   //   const fn = jest.fn();
   //   mount(

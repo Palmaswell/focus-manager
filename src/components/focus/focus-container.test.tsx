@@ -1,7 +1,11 @@
 import * as React from 'react';
 import { mount } from 'enzyme';
-import { FocusContainer, FocusContainerCtx } from './focus-container';
-import { FocusManager } from './focus-manager';
+import { FocusContainer, FocusContainerConsumer } from './focus-container';
+import {
+  FocusManager,
+  FocusManagerConsumer,
+  FocusManagerContext,
+} from './focus-manager';
 
 describe('FocusContainer', () => {
   test('Check for missing Focus Manager', () => {
@@ -21,7 +25,7 @@ describe('FocusContainer', () => {
     mount(
       <FocusManager>
         <FocusContainer>
-          <FocusContainerCtx.Consumer>{fn}</FocusContainerCtx.Consumer>
+          <FocusContainerConsumer>{fn}</FocusContainerConsumer>
         </FocusContainer>
       </FocusManager>
     );
@@ -32,14 +36,29 @@ describe('FocusContainer', () => {
     mount(
       <FocusManager>
         <FocusContainer>
-          <FocusContainerCtx.Consumer>{fn}</FocusContainerCtx.Consumer>
+          <FocusContainerConsumer>{fn}</FocusContainerConsumer>
           <FocusContainer>
-            <FocusContainerCtx.Consumer>{fn}</FocusContainerCtx.Consumer>
+            <FocusContainerConsumer>{fn}</FocusContainerConsumer>
           </FocusContainer>
         </FocusContainer>
       </FocusManager>
     );
     expect(fn).toHaveBeenCalledTimes(2);
     expect(fn.mock.calls[0][0]).not.toBe(fn.mock.calls[1][0]);
+  });
+
+  test('test lifdecycle', () => {
+    const fn = jest.fn();
+    const dom = mount(
+      <FocusManager reset={true}>
+        <FocusManagerConsumer>{fn}</FocusManagerConsumer>
+        <FocusContainer>Hello</FocusContainer>
+      </FocusManager>
+    );
+    const focusManagerContext: FocusManagerContext = fn.mock.calls[0][0];
+    expect(focusManagerContext.getContainers().length).toBe(1);
+    dom.unmount();
+    console.log('DFDFFFFG');
+    expect(focusManagerContext.getContainers().length).toBe(0);
   });
 });
