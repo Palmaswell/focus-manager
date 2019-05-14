@@ -25,16 +25,26 @@ export class FocusElementContext implements FocusElementContextProps {
     }
     return this;
   }
+
+  public setRef(): () => void {
+    return () => {};
+  }
 }
 
-export type FocusElementProps = React.PropsWithChildren<{
+export type FocusElementProps = {
   readonly tabIndex?: number;
-}>;
+  readonly children?: (cb: FocusElementContext) => JSX.Element;
+};
 
 export class FocusElementProvider extends FocusLifeCycleProvider<
   FocusContainerContext,
-  FocusElementContext
-> {}
+  FocusElementContext,
+  { readonly value: FocusElementContext }
+> {
+  public children: (cb: FocusElementContext) => JSX.Element = () => <></>;
+}
+
+// const FocusElementCtx = React.createContext({});
 
 export class FocusElement extends React.Component<FocusElementProps> {
   private readonly elementCtx: FocusElementContext;
@@ -55,7 +65,9 @@ export class FocusElement extends React.Component<FocusElementProps> {
             <FocusElementProvider
               containerContext={focusContainerContext}
               elementContext={this.elementCtx}>
+              {/* <FocusElementCtx.Consumer>
               {this.props.children}
+              </FocusElementCtx.Consumer> */}
             </FocusElementProvider>
           );
         }}

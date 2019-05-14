@@ -108,7 +108,7 @@ describe('FocusElement', () => {
       <FocusManager reset={true}>
         <FocusContainer>
           <FocusContainerConsumer>{fn}</FocusContainerConsumer>
-          <FocusElement>Hallo</FocusElement>
+          <FocusElement>{() => <></>}</FocusElement>
         </FocusContainer>
       </FocusManager>
     );
@@ -117,5 +117,23 @@ describe('FocusElement', () => {
     dom.unmount();
 
     expect(focusContainerContext.getElements().length).toBe(0);
+  });
+  test('test lifdecycle', () => {
+    const fn = jest.fn();
+    const dom = mount(
+      <FocusManager reset={true}>
+        <FocusContainer>
+          <FocusContainerConsumer>{fn}</FocusContainerConsumer>
+          <FocusElement>
+            {focusElContext => (
+              <label>
+                <input ref={focusElContext.setRef()} type="radio" />
+              </label>
+            )}
+          </FocusElement>
+        </FocusContainer>
+      </FocusManager>
+    );
+    expect(dom).toBe(false);
   });
 });

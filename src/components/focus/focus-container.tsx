@@ -63,7 +63,8 @@ export const FocusContainerConsumer = FocusContainerCtx.Consumer;
 
 export class FocusContainerProvider extends FocusLifeCycleProvider<
   FocusManagerContext,
-  FocusContainerContext
+  FocusContainerContext,
+  { value: FocusContainerContext }
 > {}
 
 export class FocusContainer extends React.Component<FocusContainerProps> {
