@@ -109,4 +109,16 @@ describe('FocusManager', () => {
     expect(fn.mock.calls.length).toBe(1);
     expect(fn.mock.calls[0][0].key).toBe('ArrowDown');
   });
+  test('FocusManager send actions', () => {
+    const dom = render(
+      <FocusManager>
+        <ul data-testid="list">
+          <li data-testid="item1">Item One</li>
+          <li data-testid="item2">Item Two</li>
+          <li data-testid="item3">Item Three</li>
+          <li data-testid="item4">Item Four</li>
+        </ul>
+      </FocusManager>
+    );
+  });
 });
