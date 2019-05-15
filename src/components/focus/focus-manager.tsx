@@ -6,7 +6,7 @@ import {
   KeyboardManagerConsumer,
   KeyboardManagerContext,
   TestKeyDown,
-} from '../keyboard';
+} from '../keyboard/keyboard';
 
 export class FocusManagerContext
   implements ContainerActions<FocusContainerContext> {

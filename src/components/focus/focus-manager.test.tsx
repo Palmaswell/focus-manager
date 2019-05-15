@@ -6,7 +6,7 @@ import {
   FocusManagerContext,
 } from './focus-manager';
 import { FocusContainer } from './focus-container';
-import { simulateKeyDown } from '../keyboard.test';
+import { simulateKeyDown } from '../keyboard/keyboard.test';
 import { render } from 'react-testing-library';
 
 describe('FocusManager', () => {
