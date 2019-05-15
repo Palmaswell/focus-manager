@@ -60,6 +60,38 @@ describe('FocusManager', () => {
       -5,
     ]);
   });
+  test('FocusManager registers 7  FocusContainers without tabIndex', () => {
+    const fn = jest.fn();
+    mount(
+      <FocusManager reset={true}>
+        <FocusManagerConsumer>{fn}</FocusManagerConsumer>
+        <FocusContainer />
+        <FocusContainer />
+        <div>
+          <FocusContainer />
+        </div>
+        <div>
+          <FocusContainer>
+            <FocusContainer />
+          </FocusContainer>
+        </div>
+        <FocusContainer>
+          <FocusContainer />
+        </FocusContainer>
+      </FocusManager>
+    );
+    const fnCtx: FocusManagerContext = fn.mock.calls[0][0];
+    expect(fnCtx.getContainers().length).toBe(7);
+    expect(fnCtx.getContainers().map(a => a.tabPosition)).toEqual([
+      -1,
+      -2,
+      -3,
+      -4,
+      -5,
+      -6,
+      -7,
+    ]);
+  });
   test('FocusManager captures key events', () => {
     const fn = jest.fn();
     const dom = render(
@@ -77,37 +109,4 @@ describe('FocusManager', () => {
     expect(fn.mock.calls.length).toBe(1);
     expect(fn.mock.calls[0][0].key).toBe('ArrowDown');
   });
-
-  // test('FocusManager registers 7  FocusContainers without tabIndex', () => {
-  //   const fn = jest.fn();
-  //   mount(
-  //     <FocusManager>
-  //       <FocusManagerCtx.Consumer>{fn}</FocusManagerCtx.Consumer>
-  //       <FocusContainer />
-  //       <FocusContainer />
-  //       <div>
-  //         <FocusContainer />
-  //       </div>
-  //       <div>
-  //         <FocusContainer>
-  //           <FocusContainer />
-  //         </FocusContainer>
-  //       </div>
-  //       <FocusContainer>
-  //         <FocusContainer />
-  //       </FocusContainer>
-  //     </FocusManager>
-  //   );
-  //   const fnCtx: FocusManagerContext = fn.mock.calls[0][0];
-  //   expect(fnCtx.getContainers().length).toBe(7);
-  //   expect(fnCtx.getContainers().map(a => a.tabIndex)).toEqual([
-  //     -1,
-  //     -2,
-  //     -3,
-  //     -4,
-  //     -5,
-  //     -6,
-  //     -7,
-  //   ]);
-  // });
 });
