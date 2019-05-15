@@ -128,14 +128,14 @@ describe('FocusElement', () => {
           <FocusElement>
             {focusElContext => {
               return <label>
-                <input ref={focusElContext.getRef()} type="radio" />
+                <input ref={focusElContext.refFunc()} type="radio" />
               </label>
             }}
           </FocusElement>
           <FocusElement>
             {focusElContext => {
               return <label>
-                <input ref={focusElContext.getRef()} type="text" />
+                <input ref={focusElContext.refFunc()} type="text" />
               </label>
             }}
           </FocusElement>
@@ -143,8 +143,8 @@ describe('FocusElement', () => {
       </FocusManager>
     );
     const ctx: FocusContainerContext = fn.mock.calls[0][0];
-    expect(ctx.getElements()[0].getRef().current).toBe(dom.find('[type="radio"]').getDOMNode());
-    expect(ctx.getElements()[1].getRef().current).toBe(dom.find('[type="text"]').getDOMNode());
+    expect(ctx.getElements()[0].getRef()).toBe(dom.find('[type="radio"]').getDOMNode());
+    expect(ctx.getElements()[1].getRef()).toBe(dom.find('[type="text"]').getDOMNode());
   });
   test('test double ref error', () => {
     const fn = jest.fn();
@@ -155,8 +155,8 @@ describe('FocusElement', () => {
           <FocusContainerConsumer>{fn}</FocusContainerConsumer>
           <FocusElement>
             {focusElContext => {
-              return <label ref={focusElContext.getRef()}>
-                <input ref={focusElContext.getRef()} type="radio" />
+              return <label ref={focusElContext.refFunc()}>
+                <input ref={focusElContext.refFunc()} type="radio" />
               </label>
             }}
           </FocusElement>

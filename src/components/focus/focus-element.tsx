@@ -10,14 +10,18 @@ export interface FocusElementContextProps {
   readonly tabIndex?: number;
 }
 
+type DoubleSetErrorRefFunc<T> = (t: T) => void;
+
 class DoubleSetErrorRef<T = unknown> implements React.RefObject<T> {
   private _current: T | null = null;
 
-  public static create<T>(): (t: T) => void {
-    const my = new DoubleSetErrorRef();
-    return function (t: T) {
-      my.current = t;
-    }
+
+  public static create<T>() {
+    return new DoubleSetErrorRef<T>();
+  }
+
+  public readonly refFunc: DoubleSetErrorRefFunc<T> = (t: T) => {
+    this.current = t;
   }
 
   public get current(): T | null {
@@ -49,8 +53,12 @@ export class FocusElementContext implements FocusElementContextProps {
     return this;
   }
 
-  public getRef<T>(): React.RefObject<T> {
-    return this.ref as unknown as React.RefObject<T>;
+  public refFunc<T>(): DoubleSetErrorRefFunc<T> {
+    return this.ref.refFunc;
+  }
+
+  public getRef<T>(): T | null {
+    return this.ref.current as T | null;
   }
 }
 
