@@ -24,7 +24,6 @@ export class FocusContainerContext
 
   public deleteElement(fmcc: FocusElementContext): void {
     const idx = this.elements.indexOf(fmcc);
-    console.log('delete:', idx, fmcc, this.elements);
     if (idx >= 0) {
       this.elements.splice(idx, 1);
     }
@@ -63,8 +62,7 @@ export const FocusContainerConsumer = FocusContainerCtx.Consumer;
 
 export class FocusContainerProvider extends FocusLifeCycleProvider<
   FocusManagerContext,
-  FocusContainerContext,
-  { value: FocusContainerContext }
+  FocusContainerContext
 > {}
 
 export class FocusContainer extends React.Component<FocusContainerProps> {

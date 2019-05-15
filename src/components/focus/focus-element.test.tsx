@@ -10,17 +10,18 @@ import { FocusElement } from './focus-element';
 
 describe('FocusElement', () => {
   test('Missing FocusManager and FocusContainer', () => {
-    expect(() => mount(<FocusElement />)).toThrowError();
+    spyOn(console, 'error');
+    expect(() => mount(<FocusElement >{(_) => <></>}</FocusElement>)).toThrowError();
   });
   test('Includes FocusManager and FocusContainer', () => {
     const container = mount(
       <FocusManager>
         <FocusContainer>
-          <FocusElement />
+          <FocusElement >{(_) => <></>}</FocusElement>
         </FocusContainer>
       </FocusManager>
     );
-    expect(container.contains(<FocusElement />)).toBeTruthy();
+    expect(container.contains(<FocusElement >{(_) => <></>}</FocusElement>)).toBeTruthy();
   });
   test('FocusContainer registers 6 FocusElements missing tabIndex', () => {
     const fn = jest.fn();
@@ -28,12 +29,12 @@ describe('FocusElement', () => {
       <FocusManager>
         <FocusContainer>
           <FocusContainerConsumer>{fn}</FocusContainerConsumer>
-          <FocusElement />
-          <FocusElement />
-          <FocusElement />
-          <FocusElement />
-          <FocusElement />
-          <FocusElement />
+          <FocusElement >{(_) => <></>}</FocusElement>
+          <FocusElement >{(_) => <></>}</FocusElement>
+          <FocusElement >{(_) => <></>}</FocusElement>
+          <FocusElement >{(_) => <></>}</FocusElement>
+          <FocusElement >{(_) => <></>}</FocusElement>
+          <FocusElement >{(_) => <></>}</FocusElement>
         </FocusContainer>
       </FocusManager>
     );
@@ -54,11 +55,11 @@ describe('FocusElement', () => {
       <FocusManager>
         <FocusContainer>
           <FocusContainerConsumer>{fn}</FocusContainerConsumer>
-          <FocusElement tabIndex={7} />
-          <FocusElement tabIndex={5} />
-          <FocusElement tabIndex={0} />
-          <FocusElement tabIndex={3} />
-          <FocusElement tabIndex={2} />
+          <FocusElement tabIndex={7} >{(_) => <></>}</FocusElement>
+          <FocusElement tabIndex={5} >{(_) => <></>}</FocusElement>
+          <FocusElement tabIndex={0} >{(_) => <></>}</FocusElement>
+          <FocusElement tabIndex={3} >{(_) => <></>}</FocusElement>
+          <FocusElement tabIndex={2} >{(_) => <></>}</FocusElement>
         </FocusContainer>
       </FocusManager>
     );
@@ -79,13 +80,13 @@ describe('FocusElement', () => {
         <FocusContainer>
           <FocusContainerConsumer>{fn}</FocusContainerConsumer>
 
-          <FocusElement tabIndex={3} />
-          <FocusElement />
-          <FocusElement tabIndex={0} />
-          <FocusElement tabIndex={10} />
-          <FocusElement tabIndex={2} />
-          <FocusElement tabIndex={15} />
-          <FocusElement tabIndex={11} />
+          <FocusElement tabIndex={3} >{(_) => <></>}</FocusElement>
+          <FocusElement >{(_) => <></>}</FocusElement>
+          <FocusElement tabIndex={0} >{(_) => <></>}</FocusElement>
+          <FocusElement tabIndex={10} >{(_) => <></>}</FocusElement>
+          <FocusElement tabIndex={2} >{(_) => <></>}</FocusElement>
+          <FocusElement tabIndex={15} >{(_) => <></>}</FocusElement>
+          <FocusElement tabIndex={11} >{(_) => <></>}</FocusElement>
         </FocusContainer>
       </FocusManager>
     );
@@ -118,22 +119,50 @@ describe('FocusElement', () => {
 
     expect(focusContainerContext.getElements().length).toBe(0);
   });
-  test('test lifdecycle', () => {
+  test('test ref collection', () => {
     const fn = jest.fn();
     const dom = mount(
       <FocusManager reset={true}>
         <FocusContainer>
           <FocusContainerConsumer>{fn}</FocusContainerConsumer>
           <FocusElement>
-            {focusElContext => (
-              <label>
-                <input ref={focusElContext.setRef()} type="radio" />
+            {focusElContext => {
+              return <label>
+                <input ref={focusElContext.getRef()} type="radio" />
               </label>
-            )}
+            }}
+          </FocusElement>
+          <FocusElement>
+            {focusElContext => {
+              return <label>
+                <input ref={focusElContext.getRef()} type="text" />
+              </label>
+            }}
           </FocusElement>
         </FocusContainer>
       </FocusManager>
     );
-    expect(dom).toBe(false);
+    const ctx: FocusContainerContext = fn.mock.calls[0][0];
+    expect(ctx.getElements()[0].getRef().current).toBe(dom.find('[type="radio"]').getDOMNode());
+    expect(ctx.getElements()[1].getRef().current).toBe(dom.find('[type="text"]').getDOMNode());
   });
+  test('test double ref error', () => {
+    const fn = jest.fn();
+    spyOn(console, 'error');
+    expect(() => mount(
+      <FocusManager reset={true}>
+        <FocusContainer>
+          <FocusContainerConsumer>{fn}</FocusContainerConsumer>
+          <FocusElement>
+            {focusElContext => {
+              return <label ref={focusElContext.getRef()}>
+                <input ref={focusElContext.getRef()} type="radio" />
+              </label>
+            }}
+          </FocusElement>
+        </FocusContainer>
+      </FocusManager>
+    )).toThrowError();
+  });
+
 });

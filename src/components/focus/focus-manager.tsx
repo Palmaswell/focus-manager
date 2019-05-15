@@ -15,7 +15,7 @@ export class FocusManagerContext
 
   public deleteContainer(fmcc: FocusContainerContext): void {
     const idx = this.containers.indexOf(fmcc);
-    console.log('delete:', idx, fmcc, this.containers);
+    // console.log('delete:', idx, fmcc, this.containers);
     if (idx >= 0) {
       this.containers.splice(idx, 1);
     }

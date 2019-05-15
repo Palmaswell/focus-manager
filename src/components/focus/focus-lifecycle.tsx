@@ -12,13 +12,13 @@ export interface FocusLifeCycleProviderProps<
 > {
   readonly elementContext: EC;
   readonly containerContext: CC;
-  readonly provider?: React.ExoticComponent<EC>;
+  readonly provider?: React.ExoticComponent<React.ProviderProps<EC>>;
 }
 
 const DummyComponent: React.ExoticComponent<
-  React.PropsWithChildren<{}>
+  React.ProviderProps<{}>
 > = (() => {
-  const fn = (props: React.PropsWithChildren<{}>) => {
+  const fn = (props: React.ProviderProps<{}>) => {
     return <>{props.children}</>;
   };
   fn.$$typeof = Symbol();
@@ -30,7 +30,7 @@ export class FocusLifeCycleProvider<
   EC
   // PR extends { readonly value: EC }
 > extends React.Component<FocusLifeCycleProviderProps<CC, EC>> {
-  private readonly provider: React.ExoticComponent<EC>;
+  private readonly provider: React.ExoticComponent<React.ProviderProps<EC>>;
   public constructor(props: FocusLifeCycleProviderProps<CC, EC>) {
     super(props);
     if (props.provider) {

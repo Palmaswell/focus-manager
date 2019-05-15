@@ -9,6 +9,7 @@ import {
 
 describe('FocusContainer', () => {
   test('Check for missing Focus Manager', () => {
+    spyOn(console, 'error');
     expect(() => mount(<FocusContainer />)).toThrowError();
   });
   test('Check with Focus Manager', () => {
@@ -58,7 +59,6 @@ describe('FocusContainer', () => {
     const focusManagerContext: FocusManagerContext = fn.mock.calls[0][0];
     expect(focusManagerContext.getContainers().length).toBe(1);
     dom.unmount();
-    console.log('DFDFFFFG');
     expect(focusManagerContext.getContainers().length).toBe(0);
   });
 });

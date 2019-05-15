@@ -7,12 +7,35 @@ import { FocusLifeCycleProvider } from './focus-lifecycle';
 
 // export interface FocusElementContextProps extends SortTabPosition {}
 export interface FocusElementContextProps {
-  tabIndex?: number;
+  readonly tabIndex?: number;
+}
+
+class DoubleSetErrorRef<T = unknown> implements React.RefObject<T> {
+  private _current: T | null = null;
+
+  public static create<T>(): (t: T) => void {
+    const my = new DoubleSetErrorRef();
+    return function (t: T) {
+      my.current = t;
+    }
+  }
+
+  public get current(): T | null {
+    return this._current;
+  }
+  public set current(c: T | null) {
+    if (this._current) {
+      throw new Error(`Double Assign Ref:${this._current}`);
+    }
+    this._current = c;
+  }
 }
 
 export class FocusElementContext implements FocusElementContextProps {
   public readonly tabIndex?: number;
   public tabPosition: number = 0xeac7;
+  private ref = DoubleSetErrorRef.create();
+
   public constructor(props: FocusElementContextProps = {}) {
     this.tabIndex = props.tabIndex;
   }
@@ -26,25 +49,21 @@ export class FocusElementContext implements FocusElementContextProps {
     return this;
   }
 
-  public setRef(): () => void {
-    return () => {};
+  public getRef<T>(): React.RefObject<T> {
+    return this.ref as unknown as React.RefObject<T>;
   }
 }
 
-export type FocusElementProps = {
-  readonly tabIndex?: number;
-  readonly children?: (cb: FocusElementContext) => JSX.Element;
-};
+export type FocusElementProps = React.ConsumerProps<FocusElementContext> & FocusElementContextProps;
 
 export class FocusElementProvider extends FocusLifeCycleProvider<
   FocusContainerContext,
-  FocusElementContext,
-  { readonly value: FocusElementContext }
+  FocusElementContext
 > {
-  public children: (cb: FocusElementContext) => JSX.Element = () => <></>;
+  // public children: (cb: FocusElementContext) => JSX.Element = () => <></>;
 }
 
-// const FocusElementCtx = React.createContext({});
+const FocusElementCtx = React.createContext<FocusElementContext>(new FocusElementContext());
 
 export class FocusElement extends React.Component<FocusElementProps> {
   private readonly elementCtx: FocusElementContext;
@@ -64,10 +83,12 @@ export class FocusElement extends React.Component<FocusElementProps> {
           return (
             <FocusElementProvider
               containerContext={focusContainerContext}
-              elementContext={this.elementCtx}>
-              {/* <FocusElementCtx.Consumer>
-              {this.props.children}
-              </FocusElementCtx.Consumer> */}
+              elementContext={this.elementCtx}
+              provider={FocusElementCtx.Provider}
+             >
+              <FocusElementCtx.Consumer>
+                {this.props.children}
+              </FocusElementCtx.Consumer>
             </FocusElementProvider>
           );
         }}

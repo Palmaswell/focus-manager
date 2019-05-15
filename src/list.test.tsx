@@ -1,12 +1,13 @@
-import * as React from 'react';
-import { render, cleanup, fireEvent } from 'react-testing-library';
-import 'jest-dom/extend-expect';
+// import * as React from 'react';
+// import { render, cleanup, fireEvent } from 'react-testing-library';
+// import 'jest-dom/extend-expect';
 
-import { List, Item } from './list';
+// import { List, Item } from './list';
 
-afterEach(cleanup);
+// afterEach(cleanup);
 
 describe('Keyboard Manager', () => {
+/*
   const { getByRole, getByText } = render(
     <List tabIndex={0}>
       <Item selected={false}>Item One</Item>
@@ -44,4 +45,5 @@ describe('Keyboard Manager', () => {
   //   firstLi.focus();
   //   fireEvent.keyDown(getByRole('listbox'), { key: 'ArrowDown', code: 40 });
   // });
+  */
 });
