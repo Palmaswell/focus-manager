@@ -6,6 +6,8 @@ import {
   FocusManagerContext,
 } from './focus-manager';
 import { FocusContainer } from './focus-container';
+import { simulateKeyDown } from '../keyboard.test';
+import { render } from 'react-testing-library';
 
 describe('FocusManager', () => {
   test('Initiate simple Context', () => {
@@ -57,6 +59,23 @@ describe('FocusManager', () => {
       -1,
       -5,
     ]);
+  });
+  test('FocusManager captures key events', () => {
+    const fn = jest.fn();
+    const dom = render(
+      <>
+        <FocusManager keyAction={fn}>
+          <section data-testid="section">
+            <FocusManager />
+            <FocusManager />
+          </section>
+        </FocusManager>
+        <FocusManager />
+      </>
+    );
+    simulateKeyDown(dom);
+    expect(fn.mock.calls.length).toBe(1);
+    expect(fn.mock.calls[0][0].key).toBe('ArrowDown');
   });
 
   // test('FocusManager registers 7  FocusContainers without tabIndex', () => {
