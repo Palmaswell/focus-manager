@@ -7,9 +7,12 @@ import {
   KeyboardManagerContext,
   TestKeyDown,
 } from '../keyboard/keyboard';
+import { FocusElementContext } from './focus-element';
+import * as uuid from 'uuid';
 
 export class FocusManagerContext
   implements ContainerActions<FocusContainerContext> {
+  public readonly id: string = uuid.v4();
   private readonly containers: FocusContainerContext[] = [];
   private readonly registerKeyTest: Map<
     string,
@@ -35,30 +38,86 @@ export class FocusManagerContext
   public getContainers(): FocusContainerContext[] {
     return sortTabIndex(this.containers);
   }
+
   public clearContainers() {
     this.containers.splice(0);
   }
 
+  public getElements(): FocusElementContext[] {
+    return this.getContainers().reduce((p: FocusElementContext[], c) => {
+      return p.concat(c.getElements());
+    }, []);
+  }
+
+  private focusDirection(dir: 1 | -1) {
+    const elements = this.getElements();
+    // console.log('focusDirection', this.id, dir, elements.length, this.getContainers().length);
+    if (elements.length <= 0) {
+      return;
+    }
+    if (elements.length === 1) {
+      elements[0].focus = true;
+      return;
+    }
+
+    let idx = elements.findIndex(i => i.focus);
+    // console.log('focusDirection:findIndex:', dir, elements.length, idx);
+    let prevIdx = idx;
+    if (idx < 0 && dir > 0) {
+      prevIdx = idx = 0;
+    } else if (idx < 0 && dir < 0) {
+      prevIdx = idx = elements.length - 1;
+    } else if (idx + dir === elements.length) {
+      idx = 0;
+    } else if (idx + dir < 0) {
+      idx = elements.length - 1;
+    } else {
+      idx += dir;
+    }
+    // console.log('focusDirection:toggle:', prevIdx, idx);
+    elements[prevIdx].focus = false;
+    elements[idx].focus = true;
+  }
+
   public readonly keyAction = (ev: KeyboardEvent) => {
     this.keyActions.forEach(fn => fn(ev));
+    // console.log('keyAction:', ev.key, ev.shiftKey);
+    let action = ev.key;
+    if (ev.key === 'Tab') {
+      if (ev.shiftKey) {
+        action = 'ArrowUp';
+      } else {
+        action = 'ArrowDown';
+      }
+    }
+    switch (action) {
+      case 'ArrowDown':
+        this.focusDirection(1);
+        break;
+      case 'ArrowUp':
+        this.focusDirection(-1);
+        break;
+    }
     return false;
   };
 
   public registerKeyboard(
-    kCtx: KeyboardManagerContext,
+    keyCtx: KeyboardManagerContext,
     keyAction?: TestKeyDown
   ) {
     if (keyAction) {
       this.keyActions.push(keyAction);
     }
-    const my = this.registerKeyTest.get(kCtx.id);
+    const my = this.registerKeyTest.get(keyCtx.id);
     if (!my) {
-      kCtx.registerKeyDownTest(this.keyAction);
-      this.registerKeyTest.set(kCtx.id, {
+      // console.log('registerKeyboard:register:');
+      keyCtx.registerKeyDownTest(this.keyAction);
+      this.registerKeyTest.set(keyCtx.id, {
         count: 0,
-        kCtx,
+        kCtx: keyCtx,
       });
     } else {
+      // console.log('registerKeyboard:register:++:');
       my.count++;
     }
   }
@@ -79,6 +138,7 @@ export class FocusManagerContext
     }
     my.count--;
     if (my.count === 0) {
+      console.log('unregisterKeyboard:');
       kCtx.unregisterKeyTest(this.keyAction);
       this.registerKeyTest.delete(kCtx.id);
     }
@@ -103,6 +163,7 @@ export type FocusManagerProps = React.PropsWithChildren<{
   readonly reset?: boolean;
   readonly keyAction?: TestKeyDown;
 }>;
+
 export const FocusManagerConsumer = FocusManagerCtx.Consumer;
 
 // export function FocusManager(props: FocusManagerProps): JSX.Element {

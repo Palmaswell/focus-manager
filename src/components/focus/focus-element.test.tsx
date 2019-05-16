@@ -5,7 +5,7 @@ import {
   FocusContainerContext,
   FocusContainerConsumer,
 } from './focus-container';
-import { FocusManager } from './focus-manager';
+import { FocusManager, FocusManagerConsumer, FocusManagerContext } from './focus-manager';
 import { FocusElement } from './focus-element';
 
 describe('FocusElement', () => {
@@ -179,5 +179,21 @@ describe('FocusElement', () => {
         </FocusManager>
       )
     ).toThrowError();
+  });
+
+  test('regression multiple focuselement have get a doubleref exception', () => {
+    const fn = jest.fn();
+    const dom = mount(
+      <FocusManager reset={true}>
+        <FocusManagerConsumer>{fn}</FocusManagerConsumer>
+        <FocusContainer>
+          <FocusElement>{ctx => <li ref={ctx.refFunc()}>Eins</li>}</FocusElement>
+          <FocusElement>{ctx => <li ref={ctx.refFunc()}>Zwei</li>}</FocusElement>
+        </FocusContainer>
+      </FocusManager>
+    );
+    const fnCtx: FocusManagerContext = fn.mock.calls[0][0];
+    expect(fnCtx.getElements().map(i => i.getRef<HTMLLIElement>()!.innerHTML)).toEqual(['Eins', 'Zwei']);
+    dom.unmount();
   });
 });
