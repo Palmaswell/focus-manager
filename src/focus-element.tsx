@@ -48,6 +48,7 @@ export class FocusElementContext implements FocusElementContextProps {
   }
 
   public get focus() {
+    
     return this._focus;
   }
 

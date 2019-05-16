@@ -9,6 +9,7 @@ import {
 } from '@palmaswelll/keyboard-manager';
 import { FocusElementContext } from './focus-element';
 import * as uuid from 'uuid';
+import { FocusAction, DefaultFocusActions } from './focus-actions';
 
 export class FocusManagerContext
   implements ContainerActions<FocusContainerContext> {
@@ -18,6 +19,7 @@ export class FocusManagerContext
     string,
     { count: number; kCtx: KeyboardManagerContext }
   > = new Map();
+  public readonly focusActions: Set<FocusAction>= new Set(DefaultFocusActions);
   // Testing only
   private readonly keyActions: TestKeyDown[] = [];
 
@@ -49,8 +51,21 @@ export class FocusManagerContext
     }, []);
   }
 
+  public mergeFocusActions(actions: FocusAction[]) {
+    actions.forEach(a => this.focusActions.add(a));
+  }
+
+  private setFocus(element: FocusElementContext, action: boolean) {
+    element.focus = action;
+    // console.log('SetFocus', action);
+    this.focusActions.forEach(ac => {
+      ac(element, action);
+    });
+  }
+
   private focusDirection(dir: 1 | -1) {
     const elements = this.getElements();
+    // console.log('focusDirection:', dir);
     // console.log('focusDirection', this.id, dir, elements.length, this.getContainers().length);
     if (elements.length <= 0) {
       return;
@@ -61,7 +76,6 @@ export class FocusManagerContext
     }
 
     let idx = elements.findIndex(i => i.focus);
-    // console.log('focusDirection:findIndex:', dir, elements.length, idx);
     let prevIdx = idx;
     if (idx < 0 && dir > 0) {
       prevIdx = idx = 0;
@@ -74,9 +88,9 @@ export class FocusManagerContext
     } else {
       idx += dir;
     }
-    // console.log('focusDirection:toggle:', prevIdx, idx);
-    elements[prevIdx].focus = false;
-    elements[idx].focus = true;
+    // console.log('focusDirection:findIndex:', dir, elements.length, idx);
+    this.setFocus(elements[prevIdx], false);
+    this.setFocus(elements[idx], true);
   }
 
   public readonly keyAction = (ev: KeyboardEvent) => {
@@ -108,6 +122,7 @@ export class FocusManagerContext
     if (keyAction) {
       this.keyActions.push(keyAction);
     }
+    // console.log('registerKeyboard', keyCtx.id);
     const my = this.registerKeyTest.get(keyCtx.id);
     if (!my) {
       // console.log('registerKeyboard:register:');
@@ -123,7 +138,7 @@ export class FocusManagerContext
   }
 
   public unregisterKeyboard(
-    kCtx: KeyboardManagerContext,
+    keyCtx: KeyboardManagerContext,
     keyAction?: TestKeyDown
   ) {
     if (keyAction) {
@@ -132,15 +147,16 @@ export class FocusManagerContext
         this.keyActions.splice(idx, 1);
       }
     }
-    const my = this.registerKeyTest.get(kCtx.id);
+    // console.log('unregisterKeyboard', keyCtx.id);
+    const my = this.registerKeyTest.get(keyCtx.id);
     if (!my) {
       throw new Error('unregister called before register');
     }
     my.count--;
-    if (my.count === 0) {
-      console.log('unregisterKeyboard:');
-      kCtx.unregisterKeyTest(this.keyAction);
-      this.registerKeyTest.delete(kCtx.id);
+    if (my.count < 0) {
+      // console.log('unregisterKeyboard:ZERO:', keyCtx.id);
+      keyCtx.unregisterKeyTest(this.keyAction);
+      this.registerKeyTest.delete(keyCtx.id);
     }
   }
 
@@ -162,19 +178,10 @@ const FocusManagerCtx = React.createContext<FocusManagerContext | Error>(
 export type FocusManagerProps = React.PropsWithChildren<{
   readonly reset?: boolean;
   readonly keyAction?: TestKeyDown;
+  readonly focusActions?: FocusAction[];
 }>;
 
 export const FocusManagerConsumer = FocusManagerCtx.Consumer;
-
-// export function FocusManager(props: FocusManagerProps): JSX.Element {
-//   return (
-//     <FocusManagerProvider
-//       reset={props.reset}
-//       focusManagerContext={focusManagerContext}>
-//       {props.children}
-//     </FocusManagerProvider>
-//   );
-// }
 
 export type FocusManagerProviderProps = React.PropsWithChildren<
   FocusManagerProps
@@ -189,6 +196,8 @@ class InternalFocusManagerProvider extends React.Component<
 > {
   constructor(props: InternalFocusManagerProviderProps) {
     super(props);
+    // console.log('InternalFocusManagerProvider', props.keyboardManagerContext);
+    focusManagerContext.mergeFocusActions(props.focusActions || []);
     if (props.reset) {
       focusManagerContext.clearContainers();
     }
@@ -221,7 +230,7 @@ export function FocusManager(props: FocusManagerProps) {
       {keyboardManagerContext => (
         <InternalFocusManagerProvider
           {...props}
-          keyboardManagerContext={keyboardManagerContext}>
+          keyboardManagerContext={keyboardManagerContext} >
           {props.children}
         </InternalFocusManagerProvider>
       )}
