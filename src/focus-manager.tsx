@@ -6,7 +6,7 @@ import {
   KeyboardManagerConsumer,
   KeyboardManagerContext,
   TestKeyDown,
-} from '../keyboard/keyboard';
+} from '@palmaswell/keyboard-manager';
 import { FocusElementContext } from './focus-element';
 import * as uuid from 'uuid';
 

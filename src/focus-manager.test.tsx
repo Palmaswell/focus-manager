@@ -6,9 +6,8 @@ import {
   FocusManagerContext,
 } from './focus-manager';
 import { FocusContainer } from './focus-container';
-import { simulateKeyDown } from '../keyboard/keyboard.test';
+import { simulateKeyDown, KeyboardManager } from '@palmaswell/keyboard-manager';
 import { render, RenderResult } from 'react-testing-library';
-import { KeyboardManager } from '../keyboard';
 import { FocusElement } from './focus-element';
 
 type LIProps = React.PropsWithChildren<{
@@ -144,7 +143,7 @@ describe('FocusManager', () => {
   test('FocusManager captures key events', () => {
     const fn = jest.fn();
     const dom = render(
-      <>
+      <KeyboardManager>
         <FocusManager keyAction={fn}>
           <section data-testid="section">
             Socken
@@ -153,7 +152,7 @@ describe('FocusManager', () => {
           </section>
         </FocusManager>
         <FocusManager />
-      </>
+      </KeyboardManager>
     );
     simulateKeyDown(dom);
     expect(fn.mock.calls.length).toBe(1);

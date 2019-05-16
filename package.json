@@ -1,0 +1,37 @@
+{
+  "name": "@palmaswell/focus-manager",
+  "version": "1.0.0",
+  "main": "dist/esm/index.js",
+  "scripts": {
+    "build": "tsc --module commonjs --target es6 --outDir dist/esm",
+    "test": "jest"
+  },
+  "author": "Mauricio Palma <mauricio.palma@woodlikeocean.com>",
+  "license": "AFL-2.0",
+  "private": false,
+  "dependencies": {
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/enzyme": "^3.9.1",
+    "@types/jest": "^24.0.12",
+    "@types/react": "^16.8.17",
+    "@types/react-dom": "^16.8.4",
+    "@types/uuid": "^3.4.4",
+    "enzyme": "^3.9.0",
+    "enzyme-adapter-react-16": "^1.12.1",
+    "jest-cli": "^24.8.0",
+    "jest-dom": "^3.2.2",
+    "react-testing-library": "^7.0.0",
+    "ts-jest": "^24.0.2",
+    "jest": "^24.8.0",
+    "jsdom": "^15.1.0",
+    "typescript": "^3.4.5",
+    "tslint": "^5.16.0"
+  },
+  "resolutions": {
+    "jsdom": "15.1.0"
+  }
+}
