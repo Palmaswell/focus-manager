@@ -6,7 +6,7 @@ import {
   FocusManagerContext,
 } from './focus-manager';
 import { FocusContainer } from './focus-container';
-import { simulateKeyDown, KeyboardManager } from '@palmaswell/keyboard-manager';
+import { simulateKeyDown, KeyboardManager } from '@palmaswelll/keyboard-manager';
 import { render, RenderResult } from 'react-testing-library';
 import { FocusElement } from './focus-element';
 
