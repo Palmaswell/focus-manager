@@ -227,7 +227,4 @@ describe('FocusManager', () => {
       });
     });
   });
-
-
-
 });

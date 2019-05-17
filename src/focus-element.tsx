@@ -5,7 +5,6 @@ import {
 } from './focus-container';
 import { FocusLifeCycleProvider } from './focus-lifecycle';
 
-// export interface FocusElementContextProps extends SortTabPosition {}
 export interface FocusElementContextProps {
   readonly focus?: boolean;
   readonly tabIndex?: number;
@@ -28,6 +27,7 @@ class DoubleSetErrorRef<T = unknown> implements React.RefObject<T> {
   public get current(): T | null {
     return this._current;
   }
+
   public set current(c: T | null) {
     if (this._current && c && this._current !== c) {
       throw new Error(`Double Assign Ref:${this._current}:${c}`);
@@ -48,7 +48,6 @@ export class FocusElementContext implements FocusElementContextProps {
   }
 
   public get focus() {
-    
     return this._focus;
   }
 
@@ -79,9 +78,7 @@ export type FocusElementProps = React.ConsumerProps<FocusElementContext> & Focus
 export class FocusElementProvider extends FocusLifeCycleProvider<
   FocusContainerContext,
   FocusElementContext
-> {
-  // public children: (cb: FocusElementContext) => JSX.Element = () => <></>;
-}
+> {}
 
 const FocusElementCtx = React.createContext<FocusElementContext>(new FocusElementContext());
 

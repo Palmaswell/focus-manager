@@ -12,6 +12,7 @@ describe('FocusContainer', () => {
     spyOn(console, 'error');
     expect(() => mount(<FocusContainer />)).toThrowError();
   });
+
   test('Check with Focus Manager', () => {
     expect(() =>
       mount(
@@ -21,6 +22,7 @@ describe('FocusContainer', () => {
       )
     ).not.toThrowError();
   });
+
   test('Init simple Context', () => {
     const fn = jest.fn();
     mount(
@@ -32,6 +34,7 @@ describe('FocusContainer', () => {
     );
     expect(fn).toBeCalled();
   });
+
   test('nested context', () => {
     const fn = jest.fn();
     mount(

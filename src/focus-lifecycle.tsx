@@ -8,14 +8,13 @@ export interface ContainerActions<EC> {
 export interface FocusLifeCycleProviderProps<
   CC extends ContainerActions<EC>,
   EC
-  // PR extends React.PropsWithChildren<{}>
 > {
   readonly elementContext: EC;
   readonly containerContext: CC;
   readonly provider?: React.ExoticComponent<React.ProviderProps<EC>>;
 }
 
-const DummyComponent: React.ExoticComponent<
+const DefaultProvider: React.ExoticComponent<
   React.ProviderProps<{}>
 > = (() => {
   const fn = (props: React.ProviderProps<{}>) => {
@@ -28,7 +27,6 @@ const DummyComponent: React.ExoticComponent<
 export class FocusLifeCycleProvider<
   CC extends ContainerActions<EC>,
   EC
-  // PR extends { readonly value: EC }
 > extends React.Component<FocusLifeCycleProviderProps<CC, EC>> {
   private readonly provider: React.ExoticComponent<React.ProviderProps<EC>>;
   public constructor(props: FocusLifeCycleProviderProps<CC, EC>) {
@@ -36,7 +34,7 @@ export class FocusLifeCycleProvider<
     if (props.provider) {
       this.provider = props.provider;
     } else {
-      this.provider = DummyComponent;
+      this.provider = DefaultProvider;
     }
   }
   public componentDidMount(): void {
@@ -46,11 +44,6 @@ export class FocusLifeCycleProvider<
     this.props.containerContext.del(this.props.elementContext);
   }
   public render(): JSX.Element {
-    // return React.createElement(
-    //   this.provider,
-    //   this.props.elementContext,
-    //   this.props.children
-    // );
     return (
       <this.provider value={this.props.elementContext}>
         <>{this.props.children}</>

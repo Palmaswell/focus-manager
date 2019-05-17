@@ -15,6 +15,7 @@ describe('FocusElement', () => {
       mount(<FocusElement>{_ => <></>}</FocusElement>)
     ).toThrowError();
   });
+
   test('Includes FocusManager and FocusContainer', () => {
     const container = mount(
       <FocusManager>
@@ -23,10 +24,12 @@ describe('FocusElement', () => {
         </FocusContainer>
       </FocusManager>
     );
+
     expect(
       container.contains(<FocusElement>{_ => <></>}</FocusElement>)
     ).toBeTruthy();
   });
+
   test('FocusContainer registers 6 FocusElements missing tabIndex', () => {
     const fn = jest.fn();
     mount(
@@ -53,6 +56,7 @@ describe('FocusElement', () => {
       -6,
     ]);
   });
+
   test('FocusContainer registers 4 FocusElements with tabIndex', () => {
     const fn = jest.fn();
     mount(
@@ -77,6 +81,7 @@ describe('FocusElement', () => {
       7,
     ]);
   });
+
   test('FocusContainer registers 7 FocusElements with and without tabIndex', () => {
     const fn = jest.fn();
     mount(
@@ -123,6 +128,7 @@ describe('FocusElement', () => {
 
     expect(focusContainerContext.getElements().length).toBe(0);
   });
+
   test('test ref collection', () => {
     const fn = jest.fn();
     const dom = mount(
@@ -150,6 +156,7 @@ describe('FocusElement', () => {
         </FocusContainer>
       </FocusManager>
     );
+
     const ctx: FocusContainerContext = fn.mock.calls[0][0];
     expect(ctx.getElements()[0].getRef()).toBe(
       dom.find('[type="radio"]').getDOMNode()
@@ -158,6 +165,7 @@ describe('FocusElement', () => {
       dom.find('[type="text"]').getDOMNode()
     );
   });
+
   test('test double ref error', () => {
     const fn = jest.fn();
     spyOn(console, 'error');

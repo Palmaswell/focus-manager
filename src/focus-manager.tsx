@@ -20,7 +20,7 @@ export class FocusManagerContext
     { count: number; kCtx: KeyboardManagerContext }
   > = new Map();
   public readonly focusActions: Set<FocusAction>= new Set(DefaultFocusActions);
-  // Testing only
+  // This property for testing
   private readonly keyActions: TestKeyDown[] = [];
 
   public addContainer(fmcc: FocusContainerContext): void {
@@ -31,7 +31,6 @@ export class FocusManagerContext
 
   public deleteContainer(fmcc: FocusContainerContext): void {
     const idx = this.containers.indexOf(fmcc);
-    // console.log('delete:', idx, fmcc, this.containers);
     if (idx >= 0) {
       this.containers.splice(idx, 1);
     }
@@ -57,7 +56,6 @@ export class FocusManagerContext
 
   private setFocus(element: FocusElementContext, action: boolean) {
     element.focus = action;
-    // console.log('SetFocus', action);
     this.focusActions.forEach(ac => {
       ac(element, action);
     });
@@ -65,8 +63,6 @@ export class FocusManagerContext
 
   private focusDirection(dir: 1 | -1) {
     const elements = this.getElements();
-    // console.log('focusDirection:', dir);
-    // console.log('focusDirection', this.id, dir, elements.length, this.getContainers().length);
     if (elements.length <= 0) {
       return;
     }
@@ -88,15 +84,14 @@ export class FocusManagerContext
     } else {
       idx += dir;
     }
-    // console.log('focusDirection:findIndex:', dir, elements.length, idx);
     this.setFocus(elements[prevIdx], false);
     this.setFocus(elements[idx], true);
   }
 
   public readonly keyAction = (ev: KeyboardEvent) => {
     this.keyActions.forEach(fn => fn(ev));
-    // console.log('keyAction:', ev.key, ev.shiftKey);
     let action = ev.key;
+
     if (ev.key === 'Tab') {
       if (ev.shiftKey) {
         action = 'ArrowUp';
@@ -104,6 +99,7 @@ export class FocusManagerContext
         action = 'ArrowDown';
       }
     }
+
     switch (action) {
       case 'ArrowDown':
         this.focusDirection(1);
@@ -122,17 +118,15 @@ export class FocusManagerContext
     if (keyAction) {
       this.keyActions.push(keyAction);
     }
-    // console.log('registerKeyboard', keyCtx.id);
+
     const my = this.registerKeyTest.get(keyCtx.id);
     if (!my) {
-      // console.log('registerKeyboard:register:');
       keyCtx.registerKeyDownTest(this.keyAction);
       this.registerKeyTest.set(keyCtx.id, {
         count: 0,
         kCtx: keyCtx,
       });
     } else {
-      // console.log('registerKeyboard:register:++:');
       my.count++;
     }
   }
@@ -147,14 +141,15 @@ export class FocusManagerContext
         this.keyActions.splice(idx, 1);
       }
     }
-    // console.log('unregisterKeyboard', keyCtx.id);
+
     const my = this.registerKeyTest.get(keyCtx.id);
+
     if (!my) {
       throw new Error('unregister called before register');
     }
+
     my.count--;
     if (my.count < 0) {
-      // console.log('unregisterKeyboard:ZERO:', keyCtx.id);
       keyCtx.unregisterKeyTest(this.keyAction);
       this.registerKeyTest.delete(keyCtx.id);
     }
@@ -170,7 +165,6 @@ export class FocusManagerContext
 }
 
 const focusManagerContext = new FocusManagerContext();
-
 const FocusManagerCtx = React.createContext<FocusManagerContext | Error>(
   new Error('Missing FocusManager')
 );
@@ -196,7 +190,6 @@ class InternalFocusManagerProvider extends React.Component<
 > {
   constructor(props: InternalFocusManagerProviderProps) {
     super(props);
-    // console.log('InternalFocusManagerProvider', props.keyboardManagerContext);
     focusManagerContext.mergeFocusActions(props.focusActions || []);
     if (props.reset) {
       focusManagerContext.clearContainers();

@@ -50,14 +50,12 @@ export class FocusContainerContext
     this.deleteElement(fmec);
   }
 }
-export type FocusContainerProps = React.PropsWithChildren<
-  FocusContainerContextProps
->;
+
+export type FocusContainerProps = React.PropsWithChildren<FocusContainerContextProps>;
 
 const FocusContainerCtx = React.createContext<FocusContainerContext | Error>(
   new Error('missing FocusContainer')
 );
-
 export const FocusContainerConsumer = FocusContainerCtx.Consumer;
 
 export class FocusContainerProvider extends FocusLifeCycleProvider<
@@ -92,32 +90,3 @@ export class FocusContainer extends React.Component<FocusContainerProps> {
     );
   }
 }
-
-// export interface FocusContainerProviderProps {
-//   // readonly focusContainerContext: FocusContainerContext;
-//   readonly focusManagerContext: FocusManagerContext | Error;
-// }
-
-// export class FocusContainerProvider extends React.Component<
-//   FocusContainerProviderProps
-// > {
-//   constructor(props: FocusContainerProviderProps) {
-//     super(props);
-//     if (props.focusManagerContext instanceof Error) {
-//       throw props.focusManagerContext;
-//     }
-//   }
-//   public componentDidMount() {}
-//   public componentWillUnmount() {}
-//   public render(): JSX.Element {
-//     return (
-//       <FocusManagerConsumer>
-//         {_ => (
-//           <FocusContainerProvider value={focusContainerContext}>
-//             {this.props.children}
-//           </FocusContainerProvider>
-//         )}
-//       </FocusManagerConsumer>
-//     );
-//   }
-// }

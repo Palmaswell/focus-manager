@@ -34,7 +34,6 @@ describe('focus actions', () => {
   test('defaultActions add actions', () => {
     const fn = jest.fn();
     const my1 = jest.fn();
-    // const my2 = jest.fn();
     const dom = render(
       <KeyboardManager>
         <FocusManager>
@@ -55,6 +54,7 @@ describe('focus actions', () => {
         </FocusManager>
       </KeyboardManager>
     );
+
     const fmCtx: FocusManagerContext = fn.mock.calls[0][0];
     function my2(elem: FocusElementContext, action: boolean) {
       const dom = elem.getRef();
