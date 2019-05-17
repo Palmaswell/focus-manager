@@ -16,6 +16,4 @@ export function HTMLInputElementAction(elem: FocusElementContext, action: boolea
   }
 }
 
-export const DefaultFocusActions: FocusAction[] = [
-  HTMLInputElementAction
-];
+export const DefaultFocusActions: FocusAction[] = [];

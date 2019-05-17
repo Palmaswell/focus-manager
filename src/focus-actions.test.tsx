@@ -5,7 +5,7 @@ import {
   FocusManagerContext,
 } from './focus-manager';
 import { render } from 'react-testing-library';
-import { DefaultFocusActions } from './focus-actions';
+import { DefaultFocusActions, HTMLInputElementAction } from './focus-actions';
 import {
   KeyboardManager,
   simulateKeyDown,
@@ -91,7 +91,7 @@ describe('focus actions', () => {
             </FocusElement>
           </FocusContainer>
         </FocusManager>
-        <FocusManager>
+        <FocusManager focusActions={[HTMLInputElementAction]}>
           <FocusContainer>
             <FocusElement>
               {ctx => <input ref={ctx.refFunc()} data-testid="input" />}
