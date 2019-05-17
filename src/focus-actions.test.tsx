@@ -77,4 +77,39 @@ describe('focus actions', () => {
     expect(htmlInput.getAttribute('testAttribute')).toEqual('false');
     dom.unmount();
   });
+
+  test('Default input element action', () => {
+    const fn = jest.fn();
+    const dom = render(
+      <KeyboardManager>
+        <section data-testid="section">
+        <FocusManager>
+          <FocusManagerConsumer>{fn}</FocusManagerConsumer>
+          <FocusContainer>
+            <FocusElement>
+              {ctx => <div ref={ctx.refFunc()}>mo</div>}
+            </FocusElement>
+          </FocusContainer>
+        </FocusManager>
+        <FocusManager>
+          <FocusContainer>
+            <FocusElement>
+              {ctx => <input ref={ctx.refFunc()} data-testid="input" />}
+            </FocusElement>
+          </FocusContainer>
+        </FocusManager>
+        </section>
+      </KeyboardManager>
+    );
+    const fmCtx: FocusManagerContext = fn.mock.calls[0][0];
+    const htmlInput = dom.getByTestId('input');
+    expect(htmlInput.getAttribute('focusAction')).toBeNull();
+    simulateKeyDown(dom);
+    expect(fmCtx.getElements().map(e => e.focus)).toEqual([true, false]);
+    simulateKeyDown(dom);
+    expect(htmlInput.getAttribute('focusAction')).toEqual('hasFocus');
+    simulateKeyDown(dom);
+    expect(htmlInput.getAttribute('focusAction')).toBeNull();
+    dom.unmount();
+  })
 });
