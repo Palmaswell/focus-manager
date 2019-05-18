@@ -16,4 +16,16 @@ export function HTMLInputElementAction(elem: FocusElementContext, action: boolea
   }
 }
 
+export function listBoxAction(elem: FocusElementContext, action: boolean): void {
+  const dom = elem.getRef<HTMLLIElement>();
+  if (!(dom instanceof HTMLLIElement)) {
+    return;
+  }
+  if (action) {
+    dom.setAttribute('focusAction', 'hasFocus');
+  } else {
+    dom.removeAttribute('focusAction');
+  }
+}
+
 export const DefaultFocusActions: FocusAction[] = [];
