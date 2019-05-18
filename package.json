@@ -7,7 +7,7 @@
     "test": "jest"
   },
   "author": "Mauricio Palma <mauricio.palma@woodlikeocean.com>",
-  "license": "AFL-2.0",
+  "license": "MIT",
   "private": false,
   "dependencies": {
     "@palmaswelll/keyboard-manager": "^1.0.0",
