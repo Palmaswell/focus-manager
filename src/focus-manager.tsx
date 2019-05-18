@@ -61,6 +61,22 @@ export class FocusManagerContext
     });
   }
 
+  private setSelected(): void {
+    const elements: FocusElementContext[] = this.getElements();
+    if (elements.length <= 0) {
+      return;
+    }
+    const idx = elements.findIndex(i => i.focus);
+    if (idx > 0) {
+      return;
+    }
+    const element = elements[idx];
+    element.selected = !element.selected;
+    this.focusActions.forEach(ac => {
+      ac(element, element.selected);
+    });
+  }
+
   private focusDirection(dir: 1 | -1) {
     const elements = this.getElements();
     if (elements.length <= 0) {
@@ -107,6 +123,11 @@ export class FocusManagerContext
       case 'ArrowUp':
         this.focusDirection(-1);
         break;
+      case 'Space':
+        this.setSelected();
+        break;
+      case 'Enter':
+        this.setSelected();
     }
     return false;
   };

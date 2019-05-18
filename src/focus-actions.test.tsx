@@ -5,13 +5,46 @@ import {
   FocusManagerContext,
 } from './focus-manager';
 import { render } from 'react-testing-library';
-import { DefaultFocusActions, HTMLInputElementAction } from './focus-actions';
+import { DefaultFocusActions, HTMLInputElementAction, listBoxAction } from './focus-actions';
 import {
   KeyboardManager,
   simulateKeyDown,
 } from '@palmaswelll/keyboard-manager';
 import { FocusContainer } from './focus-container';
 import { FocusElement, FocusElementContext } from './focus-element';
+
+type TestListBoxProps = React.PropsWithChildren<{
+  activedescendant?: string;
+}>
+function TestListBox(props: TestListBoxProps): JSX.Element {
+  return(
+  <ul
+    aria-activedescendant={props.activedescendant}
+    role="listbox"
+    data-testid='section'
+    tabIndex={0}>
+    {props.children}
+  </ul>
+  )
+}
+
+type TestListBoxItemProps = React.PropsWithChildren<{
+  id: string;
+  ref: React.RefForwardingComponent<HTMLLIElement>;
+  focused?: boolean;
+  selected?: boolean;
+}>
+
+const TestListBoxItem = React.forwardRef<HTMLLIElement, TestListBoxItemProps>((props, ref) => (
+  <li
+    ref={ref}
+    id={props.id}
+    data-testid={`test${props.id}`}
+    role="options"
+    aria-selected={props.selected}>
+    {props.children}
+  </li>
+))
 
 describe('focus actions', () => {
   test('defaultActions', () => {
@@ -112,4 +145,51 @@ describe('focus actions', () => {
     expect(htmlInput.getAttribute('focusAction')).toBeNull();
     dom.unmount();
   });
+
+  test('Aria ListBox behaviour actions', () => {
+    const items = new Array(6).fill('').map((_, i) => `Item-${i}`);
+    const fn = jest.fn();
+    const dom = render(
+      <KeyboardManager>
+        <FocusManager focusActions={[listBoxAction]}>
+          <FocusManagerConsumer>{fn}</FocusManagerConsumer>
+          <FocusContainer>
+            <TestListBox>
+              {
+                items.map(i => (
+                  <FocusElement key={`${i}-focus-element`}>
+                    {ctx => (
+                      <TestListBoxItem
+                        ref={ctx.refFunc()}
+                        focused={ctx.focus}
+                        id={i}>
+                        {`box${i}`}
+                      </TestListBoxItem>
+                    )
+                  }
+                  </FocusElement>
+                ))}
+              }
+            </TestListBox>
+          </FocusContainer>
+        </FocusManager>
+      </KeyboardManager>
+    );
+    const listBox = dom.getByTestId('section');
+    const fmCtx: FocusManagerContext = fn.mock.calls[0][0];
+    expect(listBox.getAttribute('aria-activedescendant')).toBeNull();
+
+    simulateKeyDown(dom);
+    console.log(dom.getByTestId('testItem-0').getAttribute('aria-selected'))
+    expect(dom.getByTestId('testItem-0').getAttribute('aria-selected')).toEqual('false');
+
+    simulateKeyDown(dom);
+    console.log(fmCtx.getElements())
+    expect(dom.getByTestId('testItem-1').getAttribute('aria-selected')).toEqual('false');
+
+    simulateKeyDown(dom);
+    simulateKeyDown(dom, 'section', 'Space');
+    expect(fmCtx.getElements().map(i => i.selected)).toEqual([false, false, true, false, false, false]);
+    dom.unmount();
+  })
 });
