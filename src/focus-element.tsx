@@ -7,6 +7,7 @@ import { FocusLifeCycleProvider } from './focus-lifecycle';
 
 export interface FocusElementContextProps {
   readonly focus?: boolean;
+  readonly selected?: boolean;
   readonly tabIndex?: number;
 }
 
@@ -37,22 +38,32 @@ class DoubleSetErrorRef<T = unknown> implements React.RefObject<T> {
 }
 
 export class FocusElementContext implements FocusElementContextProps {
-  private _focus: boolean = false;
   public readonly tabIndex?: number;
+  private _focus: boolean = false;
+  public selected: boolean;
   public tabPosition: number = 0xeac7;
   private ref = DoubleSetErrorRef.create();
 
   public constructor(props: FocusElementContextProps = {}) {
+    this.selected = props.selected || false;
     this.tabIndex = props.tabIndex;
     this.focus = !!props.focus;
   }
 
-  public get focus() {
+  public get focus(): boolean {
     return this._focus;
   }
 
   public set focus(f: boolean) {
     this._focus = f;
+  }
+
+  public select(): void {
+    this.selected = true;
+  }
+
+  public deSelect(): void {
+    this.selected = false;
   }
 
   public setTabPosition(tabPosition: number): FocusElementContext {
@@ -70,6 +81,10 @@ export class FocusElementContext implements FocusElementContextProps {
 
   public getRef<T>(): T | null {
     return this.ref.current as T | null;
+  }
+
+  public getSelect(): boolean {
+    return this.selected;
   }
 }
 

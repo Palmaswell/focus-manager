@@ -16,4 +16,13 @@ export function HTMLInputElementAction(elem: FocusElementContext, action: boolea
   }
 }
 
+
+export function listBoxAction(elem: FocusElementContext, action: boolean): void {
+  const dom = elem.getRef<HTMLLIElement>();
+  if (!(dom instanceof HTMLLIElement)) {
+    return;
+  }
+  dom.setAttribute('aria-selected', `${action}`);
+}
+
 export const DefaultFocusActions: FocusAction[] = [];

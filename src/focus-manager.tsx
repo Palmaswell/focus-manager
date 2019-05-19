@@ -61,6 +61,34 @@ export class FocusManagerContext
     });
   }
 
+  private setSelect(element: FocusElementContext, action: boolean) {
+    this.focusActions.forEach(ac => {
+      ac(element, action);
+    });
+  }
+
+  private handleSelect(): void {
+    const elements: FocusElementContext[] = this.getElements();
+    const idx = elements.findIndex(i => i.focus);
+    if (elements.length <= 0) {
+      return;
+    }
+    if (idx < 0) {
+      return;
+    }
+    const prevIdx = elements.findIndex(i => i.selected);
+    const element = elements[idx];
+    if (element.selected) {
+      return;
+    }
+    if (prevIdx >= 0) {
+      elements[prevIdx].deSelect();
+      this.setSelect(element, false);
+    }
+    element.select();
+    this.setSelect(element, true);
+  }
+
   private focusDirection(dir: 1 | -1) {
     const elements = this.getElements();
     if (elements.length <= 0) {
@@ -107,6 +135,11 @@ export class FocusManagerContext
       case 'ArrowUp':
         this.focusDirection(-1);
         break;
+      case 'Space':
+        this.handleSelect();
+        break;
+      case 'Enter':
+        this.handleSelect();
     }
     return false;
   };

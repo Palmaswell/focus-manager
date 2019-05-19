@@ -13,10 +13,11 @@ import { FocusElement } from './focus-element';
 type LIProps = React.PropsWithChildren<{
   readonly id: string;
   readonly focus?: boolean;
+  readonly selected?: boolean;
 }>;
 
 function LI(props: LIProps) {
-  return <FocusElement focus={props.focus}>{ctx =>
+  return <FocusElement focus={props.focus} selected={props.selected}>{ctx =>
     <li ref={ctx.refFunc()} id={props.id} data-testid={props.id}>{props.children}</li>
   }</FocusElement>
 }
@@ -157,6 +158,14 @@ describe('FocusManager', () => {
     simulateKeyDown(dom);
     expect(fn.mock.calls.length).toBe(1);
     expect(fn.mock.calls[0][0].key).toBe('ArrowDown');
+
+    simulateKeyDown(dom, 'section', 'Space');
+    expect(fn.mock.calls.length).toBe(2);
+    expect(fn.mock.calls[1][0].key).toBe('Space');
+
+    simulateKeyDown(dom, 'section', 'Enter');
+    expect(fn.mock.calls.length).toBe(3);
+    expect(fn.mock.calls[2][0].key).toBe('Enter');
     dom.unmount();
   });
 
@@ -199,6 +208,25 @@ describe('FocusManager', () => {
     expect(fmCtx.getElements().map(i => i.focus)).toEqual([false, true])
     dom.unmount();
   });
+  test('FocusManager default selected', () => {
+    const fn = jest.fn();
+    const dom = render(
+      <KeyboardManager>
+        <FocusManager>
+          <FocusManagerConsumer>{fn}</FocusManagerConsumer>
+          <FocusContainer>
+            <ul>
+              <LI id={`list1.1`}>{`list1.1`}</LI>
+              <LI selected={true} id={`list1.2`}>{`list1.2`}</LI>
+            </ul>
+          </FocusContainer>
+        </FocusManager>
+      </KeyboardManager>
+    );
+    const fmCtx: FocusManagerContext = fn.mock.calls[0][0];
+    expect(fmCtx.getElements().map(i => i.selected)).toEqual([false, true])
+    dom.unmount();
+  });
 
   test('FocusManager send actions Next', () => {
     TestSet((fmCtx, dom) => {
@@ -227,4 +255,5 @@ describe('FocusManager', () => {
       });
     });
   });
+
 });
