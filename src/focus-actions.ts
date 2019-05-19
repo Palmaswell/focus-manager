@@ -22,11 +22,7 @@ export function listBoxAction(elem: FocusElementContext, action: boolean): void 
   if (!(dom instanceof HTMLLIElement)) {
     return;
   }
-  if (action) {
-    dom.setAttribute('aria-selected', 'true');
-  } else {
-    dom.setAttribute('aria-selected', 'false');
-  }
+  dom.setAttribute('aria-selected', `${action}`);
 }
 
 export const DefaultFocusActions: FocusAction[] = [];

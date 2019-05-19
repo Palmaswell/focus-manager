@@ -38,14 +38,14 @@ class DoubleSetErrorRef<T = unknown> implements React.RefObject<T> {
 }
 
 export class FocusElementContext implements FocusElementContextProps {
-  private _focus: boolean = false;
-  public _selected: boolean = false;
   public readonly tabIndex?: number;
+  private _focus: boolean = false;
+  public selected: boolean;
   public tabPosition: number = 0xeac7;
   private ref = DoubleSetErrorRef.create();
 
   public constructor(props: FocusElementContextProps = {}) {
-    this.selected = !!props.selected;
+    this.selected = props.selected || false;
     this.tabIndex = props.tabIndex;
     this.focus = !!props.focus;
   }
@@ -54,16 +54,16 @@ export class FocusElementContext implements FocusElementContextProps {
     return this._focus;
   }
 
-  public get selected(): boolean {
-    return this._selected;
-  }
-
   public set focus(f: boolean) {
     this._focus = f;
   }
 
-  public set selected(f: boolean) {
-    this._selected = f;
+  public select(): void {
+    this.selected = true;
+  }
+
+  public deSelect(): void {
+    this.selected = false;
   }
 
   public setTabPosition(tabPosition: number): FocusElementContext {
@@ -81,6 +81,10 @@ export class FocusElementContext implements FocusElementContextProps {
 
   public getRef<T>(): T | null {
     return this.ref.current as T | null;
+  }
+
+  public getSelect(): boolean {
+    return this.selected;
   }
 }
 

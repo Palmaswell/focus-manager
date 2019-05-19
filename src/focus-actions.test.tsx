@@ -41,7 +41,7 @@ const TestListBoxItem = React.forwardRef<HTMLLIElement, TestListBoxItemProps>((p
     id={props.id}
     data-testid={`test${props.id}`}
     role="options"
-    aria-selected={props.selected}>
+    aria-selected={props.selected || false}>
     {props.children}
   </li>
 ))
@@ -163,7 +163,7 @@ describe('focus actions', () => {
                         ref={ctx.refFunc()}
                         focused={ctx.focus}
                         id={i}>
-                        {`box${i}`}
+                        {`box`}
                       </TestListBoxItem>
                     )
                   }
@@ -177,19 +177,22 @@ describe('focus actions', () => {
     );
     const listBox = dom.getByTestId('section');
     const fmCtx: FocusManagerContext = fn.mock.calls[0][0];
+    const listItems: HTMLElement[] = dom.getAllByText('box');
     expect(listBox.getAttribute('aria-activedescendant')).toBeNull();
 
-    simulateKeyDown(dom);
-    console.log(dom.getByTestId('testItem-0').getAttribute('aria-selected'))
-    expect(dom.getByTestId('testItem-0').getAttribute('aria-selected')).toEqual('false');
-
-    simulateKeyDown(dom);
-    console.log(fmCtx.getElements())
-    expect(dom.getByTestId('testItem-1').getAttribute('aria-selected')).toEqual('false');
-
-    simulateKeyDown(dom);
+    listItems.forEach(el => {
+      expect(el.getAttribute('aria-selected')).toMatch('false');
+    });
+    for(let i = 0; i <= Math.floor((listItems.length / 2) - 1); i++) {
+      simulateKeyDown(dom);
+    }
     simulateKeyDown(dom, 'section', 'Space');
     expect(fmCtx.getElements().map(i => i.selected)).toEqual([false, false, true, false, false, false]);
+    expect(listItems[2].getAttribute('aria-selected')).toMatch('true');
+    simulateKeyDown(dom);
+    simulateKeyDown(dom, 'section', 'Space');
+    expect(listItems[2].getAttribute('aria-selected')).toMatch('false');
+    expect(listItems[3].getAttribute('aria-selected')).toMatch('true');
     dom.unmount();
   })
 });
