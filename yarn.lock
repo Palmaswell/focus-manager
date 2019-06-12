@@ -292,10 +292,10 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^12.0.9"
 
-"@palmaswelll/keyboard-manager@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@palmaswelll/keyboard-manager/-/keyboard-manager-1.0.0.tgz#44bea31ee4197ddf1ca4ab2ff566d3157bc34845"
-  integrity sha512-2rT0ME3607VUJVNR7QCurIWQ96cp+4V7RoWQVSy+VaqDu8rriHAEMA3hXDwQP0grtwyYRqIFouypoZdn1V1rJQ==
+"@palmaswelll/keyboard-manager@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@palmaswelll/keyboard-manager/-/keyboard-manager-1.2.0.tgz#5c9c59a414eae562a455a0e15f56b05639c37a50"
+  integrity sha512-xUMM1TAhOKcxaa1WhcrPSxfmx+nbqsfRVMNDP+9qTGCjKQdvOgoVwyFmRUKKkV6wek3XT8Y8/sUzqp/qrWeWUA==
   dependencies:
     react "^16.8.6"
     react-dom "^16.8.6"
