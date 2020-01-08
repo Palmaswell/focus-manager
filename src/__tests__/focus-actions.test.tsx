@@ -3,15 +3,15 @@ import {
   FocusManager,
   FocusManagerConsumer,
   FocusManagerContext,
-} from './focus-manager';
+} from '../focus-manager';
 import { render } from 'react-testing-library';
-import { DefaultFocusActions, HTMLInputElementAction, listBoxAction } from './focus-actions';
+import { DefaultFocusActions, HTMLInputElementAction, listBoxAction } from '../focus-actions';
 import {
   KeyboardManager,
   simulateKeyDown,
 } from '@palmaswelll/keyboard-manager';
-import { FocusContainer } from './focus-container';
-import { FocusElement, FocusElementContext } from './focus-element';
+import { FocusContainer } from '../focus-container';
+import { FocusElement, FocusElementContext } from '../focus-element';
 
 type TestListBoxProps = React.PropsWithChildren<{
   activedescendant?: string;

@@ -4,9 +4,9 @@ import {
   FocusContainer,
   FocusContainerContext,
   FocusContainerConsumer,
-} from './focus-container';
-import { FocusManager, FocusManagerConsumer, FocusManagerContext } from './focus-manager';
-import { FocusElement } from './focus-element';
+} from '../focus-container';
+import { FocusManager, FocusManagerConsumer, FocusManagerContext } from '../focus-manager';
+import { FocusElement } from '../focus-element';
 
 describe('FocusElement', () => {
   test('Missing FocusManager and FocusContainer', () => {

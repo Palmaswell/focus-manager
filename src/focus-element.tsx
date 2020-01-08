@@ -12,6 +12,7 @@ export interface FocusElementContextProps {
 }
 
 type DoubleSetErrorRefFunc<T> = (t: T) => void;
+export type FocusElementProps = React.ConsumerProps<FocusElementContext> & FocusElementContextProps;
 
 class DoubleSetErrorRef<T = unknown> implements React.RefObject<T> {
   private _current: T | null = null;
@@ -88,13 +89,10 @@ export class FocusElementContext implements FocusElementContextProps {
   }
 }
 
-export type FocusElementProps = React.ConsumerProps<FocusElementContext> & FocusElementContextProps;
-
 export class FocusElementProvider extends FocusLifeCycleProvider<
   FocusContainerContext,
   FocusElementContext
 > {}
-
 const FocusElementCtx = React.createContext<FocusElementContext>(new FocusElementContext());
 
 export class FocusElement extends React.Component<FocusElementProps> {

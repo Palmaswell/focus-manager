@@ -7,6 +7,9 @@ import { FocusLifeCycleProvider, ContainerActions } from './focus-lifecycle';
 export interface FocusContainerContextProps {
   readonly tabIndex?: number;
 }
+
+export type FocusContainerProps = React.PropsWithChildren<FocusContainerContextProps>;
+
 export class FocusContainerContext
   implements FocusContainerContextProps, ContainerActions<FocusElementContext> {
   private readonly elements: FocusElementContext[] = [];
@@ -50,8 +53,6 @@ export class FocusContainerContext
     this.deleteElement(fmec);
   }
 }
-
-export type FocusContainerProps = React.PropsWithChildren<FocusContainerContextProps>;
 
 const FocusContainerCtx = React.createContext<FocusContainerContext | Error>(
   new Error('missing FocusContainer')
