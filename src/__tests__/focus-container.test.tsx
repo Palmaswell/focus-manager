@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { mount } from 'enzyme';
-import { FocusContainer, FocusContainerConsumer } from './focus-container';
+import { FocusContainer, FocusContainerConsumer } from '../focus-container';
 import {
   FocusManager,
   FocusManagerConsumer,
   FocusManagerContext,
-} from './focus-manager';
+} from '../focus-manager';
 
 describe('FocusContainer', () => {
   test('Check for missing Focus Manager', () => {

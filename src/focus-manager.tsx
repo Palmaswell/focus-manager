@@ -11,6 +11,20 @@ import { FocusElementContext } from './focus-element';
 import * as uuid from 'uuid';
 import { FocusAction, DefaultFocusActions } from './focus-actions';
 
+export type FocusManagerProps = React.PropsWithChildren<{
+  readonly reset?: boolean;
+  readonly keyAction?: TestKeyDown;
+  readonly focusActions?: FocusAction[];
+}>;
+
+export type FocusManagerProviderProps = React.PropsWithChildren<
+  FocusManagerProps
+>;
+
+interface InternalFocusManagerProviderProps extends FocusManagerProviderProps {
+  readonly keyboardManagerContext: KeyboardManagerContext;
+}
+
 export class FocusManagerContext
   implements ContainerActions<FocusContainerContext> {
   public readonly id: string = uuid.v4();
@@ -19,7 +33,7 @@ export class FocusManagerContext
     string,
     { count: number; kCtx: KeyboardManagerContext }
   > = new Map();
-  public readonly focusActions: Set<FocusAction>= new Set(DefaultFocusActions);
+  public readonly focusActions: Set<FocusAction> = new Set(DefaultFocusActions);
   // This property for testing
   private readonly keyActions: TestKeyDown[] = [];
 
@@ -201,22 +215,7 @@ const focusManagerContext = new FocusManagerContext();
 const FocusManagerCtx = React.createContext<FocusManagerContext | Error>(
   new Error('Missing FocusManager')
 );
-
-export type FocusManagerProps = React.PropsWithChildren<{
-  readonly reset?: boolean;
-  readonly keyAction?: TestKeyDown;
-  readonly focusActions?: FocusAction[];
-}>;
-
 export const FocusManagerConsumer = FocusManagerCtx.Consumer;
-
-export type FocusManagerProviderProps = React.PropsWithChildren<
-  FocusManagerProps
->;
-
-interface InternalFocusManagerProviderProps extends FocusManagerProviderProps {
-  readonly keyboardManagerContext: KeyboardManagerContext;
-}
 
 class InternalFocusManagerProvider extends React.Component<
   InternalFocusManagerProviderProps
@@ -228,7 +227,7 @@ class InternalFocusManagerProvider extends React.Component<
       focusManagerContext.clearContainers();
     }
   }
-  public componentWillMount() {
+  public componentDidMount() {
     focusManagerContext.registerKeyboard(
       this.props.keyboardManagerContext,
       this.props.keyAction
@@ -256,7 +255,7 @@ export function FocusManager(props: FocusManagerProps) {
       {keyboardManagerContext => (
         <InternalFocusManagerProvider
           {...props}
-          keyboardManagerContext={keyboardManagerContext} >
+          keyboardManagerContext={keyboardManagerContext}>
           {props.children}
         </InternalFocusManagerProvider>
       )}

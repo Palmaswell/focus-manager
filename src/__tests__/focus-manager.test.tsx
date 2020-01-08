@@ -4,11 +4,11 @@ import {
   FocusManager,
   FocusManagerConsumer,
   FocusManagerContext,
-} from './focus-manager';
-import { FocusContainer } from './focus-container';
+} from '../focus-manager';
+import { FocusContainer } from '../focus-container';
 import { simulateKeyDown, KeyboardManager } from '@palmaswelll/keyboard-manager';
 import { render, RenderResult } from 'react-testing-library';
-import { FocusElement } from './focus-element';
+import { FocusElement } from '../focus-element';
 
 type LIProps = React.PropsWithChildren<{
   readonly id: string;
