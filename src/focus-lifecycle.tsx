@@ -37,12 +37,14 @@ export class FocusLifeCycleProvider<
       this.provider = DefaultProvider;
     }
   }
+
   public componentDidMount(): void {
     this.props.containerContext.add(this.props.elementContext);
   }
   public componentWillUnmount(): void {
     this.props.containerContext.del(this.props.elementContext);
   }
+
   public render(): JSX.Element {
     return (
       <this.provider value={this.props.elementContext}>

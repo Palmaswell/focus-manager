@@ -1,13 +1,16 @@
 import * as React from 'react';
 import { mount } from 'enzyme';
+import { render, RenderResult } from 'react-testing-library';
+import {
+  simulateKeyDown,
+  KeyboardManager,
+} from '@palmaswelll/keyboard-manager';
 import {
   FocusManager,
   FocusManagerConsumer,
   FocusManagerContext,
 } from '../focus-manager';
 import { FocusContainer } from '../focus-container';
-import { simulateKeyDown, KeyboardManager } from '@palmaswelll/keyboard-manager';
-import { render, RenderResult } from 'react-testing-library';
 import { FocusElement } from '../focus-element';
 
 type LIProps = React.PropsWithChildren<{
@@ -17,37 +20,55 @@ type LIProps = React.PropsWithChildren<{
 }>;
 
 function LI(props: LIProps) {
-  return <FocusElement focus={props.focus} selected={props.selected}>{ctx =>
-    <li ref={ctx.refFunc()} id={props.id} data-testid={props.id}>{props.children}</li>
-  }</FocusElement>
+  return (
+    <FocusElement focus={props.focus} selected={props.selected}>
+      {ctx => (
+        <li ref={ctx.refFunc()} id={props.id} data-testid={props.id}>
+          {props.children}
+        </li>
+      )}
+    </FocusElement>
+  );
 }
 
-function TestSet(action: (fmCtx: FocusManagerContext, dom: RenderResult) => void) {
+function TestSet(
+  action: (fmCtx: FocusManagerContext, dom: RenderResult) => void
+) {
   const fn = jest.fn();
   const items = new Array(6).fill('').map((_, i) => `Item${i}`);
   const dom = render(
     <KeyboardManager>
       <FocusManager>
         <FocusManagerConsumer>{fn}</FocusManagerConsumer>
-        <section data-testid='section'>Wurst</section>
+        <section data-testid="section">Wurst</section>
         <FocusContainer>
           <ul data-testid="list1">
-            {items.map(i => <LI key={`list1.${i}`} id={`list1.${i}`}>{`list1.${i}`}</LI>)}
+            {items.map(i => (
+              <LI key={`list1.${i}`} id={`list1.${i}`}>{`list1.${i}`}</LI>
+            ))}
           </ul>
           <FocusContainer>
             <ul data-testid="list2">
-              {items.map(i => <LI key={`list2.${i}`} id={`list2.${i}`}>{`list2.${i}`}</LI>)}
+              {items.map(i => (
+                <LI key={`list2.${i}`} id={`list2.${i}`}>{`list2.${i}`}</LI>
+              ))}
             </ul>
           </FocusContainer>
         </FocusContainer>
         <FocusContainer>
-            <ul data-testid="list3">
-              {items.map(i => <LI key={`list3.${i}`} id={`list3.${i}`}>
-                 <ul data-testid={`list3.${i}`}>
-                  {items.map(j => <LI key={`list3.${i}.${j}`} id={`list3.${i}.${j}`}>{`list3.${i}.${j}`}</LI>)}
-                  </ul>
-              </LI>)}
-            </ul>
+          <ul data-testid="list3">
+            {items.map(i => (
+              <LI key={`list3.${i}`} id={`list3.${i}`}>
+                <ul data-testid={`list3.${i}`}>
+                  {items.map(j => (
+                    <LI
+                      key={`list3.${i}.${j}`}
+                      id={`list3.${i}.${j}`}>{`list3.${i}.${j}`}</LI>
+                  ))}
+                </ul>
+              </LI>
+            ))}
+          </ul>
         </FocusContainer>
       </FocusManager>
     </KeyboardManager>
@@ -66,6 +87,7 @@ describe('FocusManager', () => {
     );
     expect(fn).toBeCalled();
   });
+
   test('Initiate nested Context', () => {
     const fn = jest.fn();
     mount(
@@ -185,7 +207,7 @@ describe('FocusManager', () => {
       </KeyboardManager>
     );
     const fmCtx: FocusManagerContext = fn.mock.calls[0][0];
-    expect(fmCtx.getElements().map(i => i.focus)).toEqual([false, false])
+    expect(fmCtx.getElements().map(i => i.focus)).toEqual([false, false]);
     dom.unmount();
   });
 
@@ -205,7 +227,7 @@ describe('FocusManager', () => {
       </KeyboardManager>
     );
     const fmCtx: FocusManagerContext = fn.mock.calls[0][0];
-    expect(fmCtx.getElements().map(i => i.focus)).toEqual([false, true])
+    expect(fmCtx.getElements().map(i => i.focus)).toEqual([false, true]);
     dom.unmount();
   });
   test('FocusManager default selected', () => {
@@ -224,17 +246,21 @@ describe('FocusManager', () => {
       </KeyboardManager>
     );
     const fmCtx: FocusManagerContext = fn.mock.calls[0][0];
-    expect(fmCtx.getElements().map(i => i.selected)).toEqual([false, true])
+    expect(fmCtx.getElements().map(i => i.selected)).toEqual([false, true]);
     dom.unmount();
   });
 
   test('FocusManager send actions Next', () => {
     TestSet((fmCtx, dom) => {
       const elements = fmCtx.getElements();
-      expect(elements.reduce((p, c) => p = p || c.focus, false)).toEqual(false);
+      expect(elements.reduce((p, c) => (p = p || c.focus), false)).toEqual(
+        false
+      );
       ['ArrowDown', 'Tab'].forEach(key => {
         elements.concat(elements).forEach((_, idx) => {
-          const shouldBe = elements.map((_, jo) => (idx%elements.length) === jo);
+          const shouldBe = elements.map(
+            (_, jo) => idx % elements.length === jo
+          );
           simulateKeyDown(dom, 'section', key);
           expect(elements.map(i => i.focus)).toEqual(shouldBe);
         });
@@ -245,15 +271,19 @@ describe('FocusManager', () => {
   test('FocusManager send actions Up', () => {
     TestSet((fmCtx, dom) => {
       const elements = fmCtx.getElements();
-      expect(elements.reduce((p, c) => p = p || c.focus, false)).toEqual(false);
+      expect(elements.reduce((p, c) => (p = p || c.focus), false)).toEqual(
+        false
+      );
       ['ArrowUp', 'Shift^Tab'].forEach(key => {
         elements.concat(elements).forEach((_, idx) => {
           simulateKeyDown(dom, 'section', key);
           expect(elements.map(i => i.focus)).toEqual(
-            elements.map((_, jo) => (idx%elements.length) === ((elements.length-1) - jo)));
+            elements.map(
+              (_, jo) => idx % elements.length === elements.length - 1 - jo
+            )
+          );
         });
       });
     });
   });
-
 });

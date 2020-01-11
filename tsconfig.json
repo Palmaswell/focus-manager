@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "outDir": "dist",
+    "alwaysStrict": false,
     "inlineSources": true,
     "lib": ["dom", "es2017"],
     "declaration": true,
@@ -9,6 +10,7 @@
     "forceConsistentCasingInFileNames": true,
     "module": "esnext",
     "moduleResolution": "node",
+    "noImplicitUseStrict": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,

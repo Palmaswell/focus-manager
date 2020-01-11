@@ -1,19 +1,19 @@
 import * as React from 'react';
+import * as uuid from 'uuid';
 import { FocusContainerContext } from './focus-container';
 import { sortTabIndex } from './sort';
 import { ContainerActions } from './focus-lifecycle';
 import {
   KeyboardManagerConsumer,
   KeyboardManagerContext,
-  TestKeyDown,
+  KeydownEv,
 } from '@palmaswelll/keyboard-manager';
 import { FocusElementContext } from './focus-element';
-import * as uuid from 'uuid';
 import { FocusAction, DefaultFocusActions } from './focus-actions';
 
 export type FocusManagerProps = React.PropsWithChildren<{
   readonly reset?: boolean;
-  readonly keyAction?: TestKeyDown;
+  readonly keyAction?: KeydownEv;
   readonly focusActions?: FocusAction[];
 }>;
 
@@ -35,7 +35,7 @@ export class FocusManagerContext
   > = new Map();
   public readonly focusActions: Set<FocusAction> = new Set(DefaultFocusActions);
   // This property for testing
-  private readonly keyActions: TestKeyDown[] = [];
+  private readonly keyActions: KeydownEv[] = [];
 
   public addContainer(fmcc: FocusContainerContext): void {
     this.containers.push(
@@ -154,13 +154,17 @@ export class FocusManagerContext
         break;
       case 'Enter':
         this.handleSelect();
+        break;
+      default:
+        break;
+
     }
     return false;
   };
 
   public registerKeyboard(
     keyCtx: KeyboardManagerContext,
-    keyAction?: TestKeyDown
+    keyAction?: KeydownEv
   ) {
     if (keyAction) {
       this.keyActions.push(keyAction);
@@ -180,7 +184,7 @@ export class FocusManagerContext
 
   public unregisterKeyboard(
     keyCtx: KeyboardManagerContext,
-    keyAction?: TestKeyDown
+    keyAction?: KeydownEv
   ) {
     if (keyAction) {
       const idx = this.keyActions.indexOf(keyAction);
@@ -227,6 +231,7 @@ class InternalFocusManagerProvider extends React.Component<
       focusManagerContext.clearContainers();
     }
   }
+
   public componentDidMount() {
     focusManagerContext.registerKeyboard(
       this.props.keyboardManagerContext,
