@@ -106,6 +106,7 @@ export class FocusElement extends React.Component<FocusElementProps> {
     return (
       <FocusContainerConsumer>
         {focusContainerContext => {
+          console.log(focusContainerContext, 'context------element')
           if (focusContainerContext instanceof Error) {
             throw focusContainerContext;
           }

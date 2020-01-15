@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { mount } from 'enzyme';
-import { render, RenderResult } from 'react-testing-library';
+import { render, RenderResult } from '@testing-library/react';
 import {
   simulateKeyDown,
   KeyboardManager,

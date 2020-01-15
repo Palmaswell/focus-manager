@@ -1,3 +1,2 @@
-// require('jest-axe');
-require('jest-dom');
-require('react-testing-library');
+require('@testing-library/jest-dom');
+require('@testing-library/react');
